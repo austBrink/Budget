@@ -20,6 +20,7 @@ class Account:
         elif(sum > self.balance):
             return -1
 
+
     def getBalance(self):
         return self.balance 
 
@@ -140,19 +141,7 @@ class Checking(Account):
                 self.catagories.remove(catagory)
                 return 0
 ###########################################################################################     
-##########################################
-class Format(object):
-    @staticmethod
-    def extend(subject):
-        subject = subject.strip()
-        retSubject = ""
-        for i in subject:
-            retSubject = retSubject + i + " "
-        return retSubject
-##########################################
-########################################################################################### 
 
-########################################################################################### 
 
 
 ###########################################################################################
@@ -165,94 +154,87 @@ def header():
     print("_______________________________________")
     print("_______________________________________")
     print("\n             B U D G E T ")
+
     print("_______________________________________")    
     print("_______________________________________")
  ###############################################################################################
 def menu():
-    print("E N T E R   A  V A L I D   C H O I C E: \n\n show) s h o w \n\n in) d e p o s i t \n\n out) w i t h d r a w \n\n trans) t r a n s f e r \n\n mkcat) c r e a t e  c a t a g o r y \n\n delcat) r e m o v e   c a t a g o r y \n\n opt) o p t i o n s \n\n q) q u i t")
+    print("E N T E R   A  V A L I D   C H O I C E: \n\n show) s h o w \n\n in) d e p o s i t \n\n out) w i t h d r a w \n\n trans) t r a n s f e r \n\n mkcat) c r e a t e  c a t a g o r y \n\n rmcat) r e m o v e   c a t a g o r y \n\n opt) o p t i o n s \n\n q) q u i t \n")
  ###############################################################################################
 def showDashboard():
-    print("_______________________________________")
-    print("\n          D A S H B O A R D ")
-    print("_______________________________________")   
-    print("\n\t C H E C K I N G : " + str(myChecking.getBalance()))
+    print("Accounts and Categories:")
+    print("checking: " + str(myChecking.getBalance()))
     for i in myChecking.catagories:
-        cataName = Format.extend(i.getName())
-        print("\n\t   * " + cataName + ": " + str(i.getBalance()))
-    print("\n\t S A V I N G S : " + str(Savings.getBalance())) 
+        accountName = i.getName()
+        print("* " + accountName + ": " + str(i.getBalance()))
+    print("Savings: " + str(Savings.getBalance())) 
  ###############################################################################################
 def transfer():
     notDone = True
     sum = 0.0 
     while(notDone):
-        print("\n\t\t  T R A N S F E R   M E N U  ")  
+        print("\n  T R A N S F E R   M E N U  ")  
         print("_______________________________________________________________________")
-        print("\n\t E N T E R   A   V A L I D   C H O I C E: \n\n\t A) c h e c k i n g   t o   s a v i n g s \n\n\t B) s a v i n g s   t o   c h e c k i n g \n\n\t C) c a t a g o r y   t o   c a t a g o r y \n\n\t Q) q u i t")
+        print("\n E N T E R   A   V A L I D   C H O I C E: \n\n A) c h e c k i n g   t o   s a v i n g s \n\n B) s a v i n g s   t o   c h e c k i n g \n\n C) c a t a g o r y   t o   c a t a g o r y \n\n Q) q u i t")
         print("_______________________________________________________________________")
-        userChoice = input("\t -->>").strip().upper()
+        userChoice = input("-->>").strip().upper()
     # CASE ONE : tranfer from checking to savings 
         if(userChoice == "A"):
-            print(" \t f r o m   w h a t   c a t a g o r y   s h a l l   y o u   w i t h d r a w ? ")
-            cataName = input("\t-->>").strip().lower()
+            accountName = input("withdraw from-->>").strip().lower()
             fail = True
             while(fail):
                 try:
-                    print("\t a m o u n t ?")
-                    sum = float(input("\t-->>"))
+                    sum = float(input("amount-->>"))
                     fail = False
                 except:
-                    print("e r r o r  :  e n t e r   n u m e r i c a l   v a l u e s   o n l y ")
-            retVal = myChecking.withdraw(sum, cataName) 
+                    print("error: enter numerical values only")
+            retVal = myChecking.withdraw(sum, accountName) 
             if(retVal == -1):
-                print("\te r r o r  :  n o   c a t a g o r i e s   a v a i l a b l e")
+                print("error: no categories available")
             elif(retVal == -2):
-                print("\te r r o r  :  C H E C K I N G   O V E R D R A F T ") 
+                print("error: attempted checking overdraft") 
             elif(retVal == -3):
-                print("\te r r o r  :  C A T A G O R Y   O V E R D R A F T ") 
+                print("error: attempted category overdraft") 
             elif(retVal == -4):
-                print("\te r r o r  :  c a t a g o r y   d. n. e. ")
+                print("error: " + accountName + " is not a valid category")
             # now deposit to the Savings ONLY if checking exited normally.  
             elif(retVal == 0):
                 Savings.deposit(sum)
                 notDone = False
-                print("\ts u c c e s s  :  $" + str(sum) + "  f r o m   " + Format.extend(cataName) + "  t o   s a v i n g s ")
+                print("success :  $" + str(sum) + " from " + accountName + " to Savings")
     # CASE TWO : transfer from savings to checking
         elif(userChoice == "B"):
-            print("\tt o   w h a t   c a t a g o r y   s h a l l   y o u   d e p o s i t  ? ")
-            cataName = input("\t-->>").strip().lower()
-            fail = False
-            while(fail):
-                try:
-                    print("\t a m o u n t ?")
-                    sum = float(input("\t-->>"))
-                except:
-                    print("e r r o r  :  e n t e r   n u m e r i c a l   v a l u e s   o n l y ")
-            # THIS LINE IS NOT ALLOWED TO EXECUTE NORMALLY IF NO DESTINATION CATAGORY. Check destinations first! 
-            if(myChecking.isCatagory(cataName)!= False):
-                retVal = Savings.withdraw(sum)
-                if (retVal == -1):
-                    print("\te r r o r :  S A V I N G S   O V E R D R A F T")
-            # deposit into the choice catagory if savings withdraw exited normally. 
-                elif(retVal == 0):
-                    myChecking.deposit(sum, cataName) 
-                    notDone = False 
-                    print("\ts u c c e s s  :  $" + str(sum) + " f r o m   s a v i n g s "  + " t o " + Format.extend(cataName))
-            else:
-                print("\te r r o r  :  c a t a g o r y   "  + Format.extend(cataName) +   "   d. n. e. ")
-    # CASE THREE : tranfer from catagory to another catagory. 
-        elif(userChoice == "C"):
-            print("\tf r o m   w h a t   c a t a g o r y   s h a l l   y o u   w i t h d r a w ? ")
-            fromHere = input("\t-->>").strip().lower()
-            print("\tt o  w h a t   c a t a g o r y   s h a l l   y o u   d e p o s i t ? ")
-            toHere = input("\t-->>").strip().lower() 
+            accountName = input("to category-->>").strip().lower()
             fail = True
             while(fail):
                 try:
-                    print("\t a m o u n t ?")
-                    sum = float(input("\t-->>"))
+                    sum = float(input("amount-->>"))
                     fail = False
                 except:
-                    print("e r r o r  :  e n t e r   n u m e r i c a l   v a l u e s   o n l y ") 
+                    print("error: enter numerical values only")
+            # THIS LINE IS NOT ALLOWED TO EXECUTE NORMALLY IF NO DESTINATION CATAGORY. Check destinations first! 
+            if(myChecking.isCatagory(accountName)!= False):
+                retVal = Savings.withdraw(sum)
+                if (retVal == -1):
+                    print("error: attempted savings overdraft")
+            # deposit into the choice catagory if savings withdraw exited normally. 
+                elif(retVal == 0):
+                    myChecking.deposit(sum, accountName) 
+                    notDone = False 
+                    print("success :  $" + str(sum) + " from savings to " + accountName)
+            else:
+                print("error: " +  accountName +   " is not a valid category")
+    # CASE THREE : tranfer from catagory to another catagory. 
+        elif(userChoice == "C"):
+            fromHere = input("from category-->>").strip().lower()
+            toHere = input("to category-->>").strip().lower() 
+            fail = True
+            while(fail):
+                try:
+                    sum = float(input("amount-->>"))
+                    fail = False
+                except:
+                    print("error: enter numerical values only")
                 # devise an "isCatagory" method to simplify checking. Once they both exist all we need to worry about is overdrafting when pulling from the first... 
                 if (myChecking.isCatagory(fromHere)):
                     if(myChecking.isCatagory(toHere)):
@@ -260,15 +242,15 @@ def transfer():
                         if(retVal == 0):
                             myChecking.deposit(sum,toHere)
                             notDone = False
-                            print("\ts u c c e s s  :   " + str(sum) + "  f r o m   " + Format.extend(fromHere) + "  t o   " + Format.extend(toHere))
+                            print("success: " + str(sum) + " from " + fromHere + " to " + toHere)
                         elif(retVal == -3):
-                            print("\te r r o r  :  C A T A G O R Y   O V E R D R A F T ") 
+                            print("error: attempted category overdraft") 
                     else:
-                        print("\te r r o r  :  c a t a g o r y  "  + Format.extend(toHere) +   "  d. n. e. ")
+                        print("error "  + toHere +   " is not a valid category")
                 else:
-                    print("\te r r o r  :  c a t a g o r y  "  + Format.extend(fromHere) +   "  d. n. e. ") 
+                    print("error: "  + fromHere +   "  is not a valid category") 
         elif(userChoice == "Q"):
-            print("\tr e t u r n i n g   t o   m a i n")
+            print("returning you to main")
             notDone = False
 
             
@@ -284,7 +266,8 @@ def transfer():
 if(os.path.isfile('account_data.pkl')):
     with open('account_data.pkl', 'rb') as readMe:
         myChecking = pickle.load(readMe)
-        Savings = pickle.load(readMe)   
+        Savings = pickle.load(readMe)  
+    readMe.close() 
 
 # print out initial displays      
 header() 
@@ -300,91 +283,84 @@ while(userChoice != "q"):
         showDashboard()
 # user makes deposit 
     elif(userChoice == "in"):
-        print("t o   w h a t   a c c o u n t   s h a l l   y o u   d e p o s i t  ( s a v i n g s / c h e c k i n g ) ? ")
-        accountName = input("-->>").strip().lower()
+        accountName = input("to account-->>").strip().lower()
         if (accountName == "savings"):
             fail = True
             while(fail):
                 try:
-                    print("\t a m o u n t ?")
-                    sum = float(input("\t-->>"))
+                    sum = float(input("amount-->>"))
                     fail = False
                 except:
-                    print("e r r o r  :  e n t e r   n u m e r i c a l   v a l u e s   o n l y ")
+                    print("error: enter numerical values only")
             Savings.deposit(sum)
-            print("s u c c e s s  :  $" + str(sum) + "   d e p o s i t e d   t o   s a v i n g s")
+            print("s u c c e s s  :  $" + str(sum) + " deposited to savings")
         elif(accountName == "checking"):
             showDashboard()
-            print("\nt o   w h a t   c a t a g o r y  s h a l l   y o u   d e p o s i t  ? ")
-            cataName = input("-->>").strip().lower()
+            accountName = input("to category-->>").strip().lower()
             fail = True
             while(fail):
                 try:
-                    print("\t a m o u n t ?")
-                    sum = float(input("\t-->>"))
+                    sum = float(input("amount-->>"))
                     fail = False
                 except:
-                    print("e r r o r  :  e n t e r   n u m e r i c a l   v a l u e s   o n l y ")
-            retVal = myChecking.deposit(sum, cataName) 
+                   print("error: enter numerical values only")
+            retVal = myChecking.deposit(sum, accountName) 
             if(retVal == -1):
-                print("e r r o r  :  n o   c a t a g o r i e s   a v a i l a b l e")
+                print("error: no categories available")
             elif(retVal == -2):
-                print("e r r o r  :  c a t a g o r y   d. n. e. ")  
+                print("error: " + accountName + " is not a valid category")  
             elif(retVal == 0):
-                print("s u c c e s s  :  $" + str(sum) + "   d e p o s i t e d   t o    " + Format.extend(cataName))
+                print("success: $" + str(sum) + " deposited to " + accountName)
         else:
-            print("e r r o r  :  m a y   o n l y   d e p o s i t   t o   s a v i n g s   o r   c h e c k i n g ")     
+            print("error: choose either checking or savings to deposit")     
 # user makes withdraw  
     elif(userChoice == "out"):
-        print("f r o m   w h a t   c a t a g o r y   s h a l l   y o u   w i t h d r a w ? ")
-        accountName = input("-->>").strip().lower()
+        accountName = input("from category-->>").strip().lower()
         fail = True
         while(fail):
             try:
-                print("\t a m o u n t ?")
-                sum = float(input("\t-->>"))
+                sum = float(input("amount-->>"))
                 fail = False
             except:
-                print("e r r o r  :  e n t e r   n u m e r i c a l   v a l u e s   o n l y ")
+                print("error: enter numerical values only")
         retVal = myChecking.withdraw(sum, accountName) 
         if(retVal == -1):
-            print("e r r o r  :  n o   c a t a g o r i e s   a v a i l a b l e")
+            print("error: no categories available")
         elif(retVal == -2):
-            print("e r r o r  :  C H E C K I N G   O V E R D R A F T ") 
+            print("error: attempted checking overdraft") 
         elif(retVal == -3):
-            print("e r r o r  :  C A T A G O R Y   O V E R D R A F T ") 
+            print("error: attempted category overdraft") 
         elif(retVal == -4):
-            print("e r r o r  :  c a t a g o r y   d. n. e. ") 
+            print("error: " + accountName + " is not a valid category") 
         elif(retVal == 0):
-            print("s u c c e s s  :  $" + str(sum) + "   w i t h d r a w n   f r o m   " + Format.extend(cataName))
+            print("success:  $" + str(sum) + " withdrawn from " + accountName)
 # user makes transfer..... 
     elif(userChoice=="trans"):
         transfer()
 # user creates a catagory...
     elif(userChoice == "mkcat"):
-        print("e n t e r   n a m e  o f   c a t a g o r y ")
-        cataName = input("-->>").strip()
-        retVal = myChecking.createCatagory(cataName)
-        # myChecking.createCatagory(cataName)
+        accountName = input("name-->>").strip()
+        retVal = myChecking.createCatagory(accountName)
+        # myChecking.createCatagory(accountName)
         if(retVal == -1):
-            print("e r r o r  :  c a t a g o r y   d u p l i c a t e ")
+
+            print("error: " + accountName + " already exists, man")
         elif(retVal == 0):
-            print("s u c c e s s  :  c r e a t e d  "  + Format.extend(cataName) + "  a s   c a t a g o r y")
+            print("success: created "  + accountName + " as category")
 
 # user attempts to remove catagory 
 # -1) if no catagories -2) if catagory is not in list -3) if it's not balance 0. and 0 exited normally and executed user objective. 
-    elif(userChoice == "delcat"):
-        print("\te n t e r   a   v a l i d   a n d   e m p t y   c a t a g o r y   n a m e   t o   r e m o v e ")
-        cataName = input("\t-->>").strip().lower()
-        retVal = myChecking.removeCatagory(cataName)
+    elif(userChoice == "rmcat"):
+        accountName = input("remove-->>").strip().lower()
+        retVal = myChecking.removeCatagory(accountName)
         if(retVal == -1):
-            print("\te r r o r  :  n o   c a t a g o r i e s   a v a i l a b l e")
+            print("error: no categories available")
         elif(retVal == -2):
-            print("\te r r o r  :  c a t a g o r y   d. n. e. ") 
+            print("error: " + accountName + " is not a valid category") 
         elif(retVal == -3):
-            print("\te r r o r  :  c a t o r y   b a l a n c e   m u s t   b e   0   t o   r e m o v e ")
+            print("error: category balance must be zero to remove")
         elif(retVal == 0):
-            print("\ts u c c e s s  :  r e m o v e d   " + Format.extend(cataName))  
+            print("success: removed " + accountName)  
 # options print 
     elif(userChoice == "opt"):
         menu()       
@@ -392,9 +368,15 @@ while(userChoice != "q"):
     elif(userChoice == "q"):
         # need stuff like "save changes?"
         # gets us asking do we want auto saves with version control. if yes, how?
-        with open('C:/vault/pycode/budgetproject/account_data.pkl', 'wb') as output:
-            pickle.dump(myChecking, output, pickle.HIGHEST_PROTOCOL)
-            pickle.dump(Savings, output, pickle.HIGHEST_PROTOCOL)
-            print("d a t a   s a v e d")
+        try:
+            with open('account_data.pkl', 'wb') as output:
+                pickle.dump(myChecking, output, pickle.HIGHEST_PROTOCOL)
+                pickle.dump(Savings, output, pickle.HIGHEST_PROTOCOL)
+                output.close()
+                print("saved your data")
+        except:
+            print("error: could not save")
+            userChoice = ""
     else: 
-        print(userChoice + "  i s   n o t   a   r e c o g n i z e d   c o m m a n d ")
+
+        print(userChoice + "  is not a recognized command")
