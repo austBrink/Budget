@@ -1,4 +1,3 @@
-
 import pickle
 import os  
 ###############################################################################################
@@ -19,7 +18,6 @@ class Account:
             return 0 
         elif(sum > self.balance):
             return -1
-
 
     def getBalance(self):
         return self.balance 
@@ -43,16 +41,25 @@ class Checking(Account):
     def __init__(self, name):
         self.name = name 
         self.balance = 0.0 
-        self.negative = 0.0
+        self.boa = 0.0
         self.catagories = []
         self.tag = ""
-################################################################################################   
+################################################################################################
+    def updateBoa(self, sum):
+        self.boa = self.boa + sum 
+################################################################################################
+    def getBoa(self):
+        return self.boa
+################################################################################################
     def showCatagories(self):
         if not self.catagories:
             return -1
         else:
             for i in self.catagories:
                 print(str(i.getName()) + " : " + str(i.getBalance()))
+ ###############################################################################################
+    def payBoa(self, sum):
+        self.boa = self.boa - sum
  ###############################################################################################
 # adds an account to the list in the checking account.
 # RETURN: -1 if that's already a catagory. 0 if added.  
@@ -109,6 +116,7 @@ class Checking(Account):
  ###############################################################################################
     # removes float variable sum from the balance of catagory in self.catagories. 
     # RETURNS 0 for success -1) for empty catagory list -2) for TOTAL CHECKING overdraft -3) for catagory overdraft -4) no such catagory exists in catagorylist   
+    # me from the future.... this is a really crap function. 
     def withdraw(self,sum,catagoryName):
         if (not self.catagories):
             return -1
@@ -159,7 +167,7 @@ def header():
     print("_______________________________________")
  ###############################################################################################
 def menu():
-    print("E N T E R   A  V A L I D   C H O I C E: \n\n show) s h o w \n\n in) d e p o s i t \n\n out) w i t h d r a w \n\n trans) t r a n s f e r \n\n mkcat) c r e a t e  c a t a g o r y \n\n rmcat) r e m o v e   c a t a g o r y \n\n opt) o p t i o n s \n\n q) q u i t \n")
+    print("E N T E R   A  V A L I D   C H O I C E: \n\n show) s h o w \n\n in) d e p o s i t \n\n out) w i t h d r a w \n\n trans) t r a n s f e r \n\n mkcat) c r e a t e  c a t a g o r y \n\n rmcat) r e m o v e   c a t a g o r y \n\n opt) o p t i o n s \n\n q) q u i t \n\n p) p a y   b o a  \n")
  ###############################################################################################
 def showDashboard():
     print("Accounts and Categories:")
@@ -167,6 +175,7 @@ def showDashboard():
     for i in myChecking.catagories:
         accountName = i.getName()
         print("* " + accountName + ": " + str(i.getBalance()))
+    print("Bank of America: " + str(myChecking.getBoa()))
     print("Savings: " + str(Savings.getBalance())) 
  ###############################################################################################
 def transfer():
@@ -260,9 +269,12 @@ def transfer():
 ######################################################################################################################
 ######################################################################################################################
 
-
 # look before we leap and check to see if the file exists someplace
 # if this  pickle load does not run, we will be attmepting to access null objects. 
+
+#myChecking = Checking("Checking")
+#Savings = Account("Savings") 
+
 if(os.path.isfile('account_data.pkl')):
     with open('account_data.pkl', 'rb') as readMe:
         myChecking = pickle.load(readMe)
@@ -316,6 +328,15 @@ while(userChoice != "q"):
 # user makes withdraw  
     elif(userChoice == "out"):
         accountName = input("from category-->>").strip().lower()
+        isCredit = False 
+        fail = True
+        while(fail):
+            credit = input("was this purchase on credit?-->>(y/n)").strip().lower() 
+            if(credit == "y"):
+                isCredit = True
+                fail = False
+            elif(credit == "n"):
+                fail = False   
         fail = True
         while(fail):
             try:
@@ -333,7 +354,10 @@ while(userChoice != "q"):
         elif(retVal == -4):
             print("error: " + accountName + " is not a valid category") 
         elif(retVal == 0):
+            if(isCredit):
+                myChecking.updateBoa(sum) 
             print("success:  $" + str(sum) + " withdrawn from " + accountName)
+            
 # user makes transfer..... 
     elif(userChoice=="trans"):
         transfer()
@@ -343,7 +367,6 @@ while(userChoice != "q"):
         retVal = myChecking.createCatagory(accountName)
         # myChecking.createCatagory(accountName)
         if(retVal == -1):
-
             print("error: " + accountName + " already exists, man")
         elif(retVal == 0):
             print("success: created "  + accountName + " as category")
@@ -377,6 +400,15 @@ while(userChoice != "q"):
         except:
             print("error: could not save")
             userChoice = ""
+    elif(userChoice == "p"):
+        print("BOA current balance-->>" + str(myChecking.getBoa()))
+        fail = True
+        while(fail):
+            try:
+                sum = float(input("How much to pay down?-->>"))
+                fail = False
+            except:
+                print("error: enter numerical values only")
+        myChecking.payBoa(sum)
     else: 
-
         print(userChoice + "  is not a recognized command")
