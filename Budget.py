@@ -162,7 +162,6 @@ def header():
     print("_______________________________________")
     print("_______________________________________")
     print("\n             B U D G E T ")
-
     print("_______________________________________")    
     print("_______________________________________")
  ###############################################################################################
@@ -325,7 +324,7 @@ while(userChoice != "q"):
                 print("success: $" + str(sum) + " deposited to " + accountName)
         else:
             print("error: choose either checking or savings to deposit")     
-# user makes withdraw  
+# user makes withdraw 
     elif(userChoice == "out"):
         accountName = input("from category-->>").strip().lower()
         isCredit = False 
