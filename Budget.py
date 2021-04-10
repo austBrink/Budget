@@ -5,8 +5,6 @@ from decimal import Decimal as D
 ###############################################################################################
 ###############################################################################################
 
-# need to talk about what to do about things. 
-# dsf 
 class Account:
     def __init__(self, name):
         self.name = name 
@@ -15,8 +13,7 @@ class Account:
 
     def deposit(self, sum):
         self.balance = D(self.balance) + D(sum) 
-
-#double check the logic here. Not sure if this is right.  
+ 
     def withdraw(self, sum):
         self.negative = D(self.balance) - D(sum) 
         if(sum <= self.balance):
@@ -57,13 +54,13 @@ class Checking(Account):
     def getBoa(self):
         return self.boa
 ################################################################################################
+#Does this literally never get run? 
     def showCatagories(self):
         if not self.catagories:
             return -1
         else:
             for i in self.catagories:
-                # Pretty sure this is NOT how we are goign to format this. 
-                print(str(i.getName()) + " : " + str(i.getBalance()))
+                print(str(i.getName()) + " : ${:.2f}".format(i.getBalance()))
  ###############################################################################################
     def payBoa(self, sum):
         self.boa = D(self.boa) - D(sum)
@@ -168,21 +165,32 @@ class Checking(Account):
 def header():
     print("_______________________________________")
     print("_______________________________________")
-    print("\n             B U D G E T ")
+    print("\n            B U D G E T ")
     print("_______________________________________")    
     print("_______________________________________")
  ###############################################################################################
 def menu():
     print("E N T E R   A  V A L I D   C H O I C E: \n\n show) s h o w \n\n in) d e p o s i t \n\n out) w i t h d r a w \n\n trans) t r a n s f e r \n\n mkcat) c r e a t e  c a t a g o r y \n\n rmcat) r e m o v e   c a t a g o r y \n\n opt) o p t i o n s \n\n q) q u i t \n\n p) p a y   b o a  \n")
  ###############################################################################################
-def showDashboard():
-    print("Accounts and Categories:")
-    print("checking: " + str(myChecking.getBalance()))
+def displayCats():
     for i in myChecking.catagories:
         accountName = i.getName()
-        print("* " + accountName + ": " + str(i.getBalance()))
-    print("Bank of America: " + str(myChecking.getBoa()))
-    print("Savings: " + str(Savings.getBalance()))
+        print(accountName + ": ${:.2f}".format(i.getBalance()))
+###############################################################################################
+def showDashboard():
+    print("Accounts and Categories:")
+    # Show Checking total 
+    print("checking: ${:.2f}".format(myChecking.getBalance()))
+    #loop for catagories 
+    for i in myChecking.catagories:
+        accountName = i.getName()
+        print(accountName + ": ${:.2f}".format(i.getBalance()))
+        # print("* " + accountName + ": " + str(i.getBalance()))
+    #show bank of america bal (already deducted from categories)
+    print("Bank of America: ${:.2f}".format(myChecking.getBoa()))
+    #show savings 
+    #print("Savings: " + str(Savings.getBalance()))
+    print("Savings: ${:.2f}".format(Savings.getBalance()))
  ###############################################################################################
 def transfer():
     notDone = True
@@ -216,7 +224,7 @@ def transfer():
             elif(retVal == 0):
                 Savings.deposit(sum)
                 notDone = False
-                print("success :  $" + str(sum) + " from " + accountName + " to Savings")
+                print("success: ${:.2f}".format(sum) + " from " + accountName + " to Savings")
     # CASE TWO : transfer from savings to checking
         elif(userChoice == "B"):
             accountName = input("to category-->>").strip().lower()
@@ -236,7 +244,7 @@ def transfer():
                 elif(retVal == 0):
                     myChecking.deposit(sum, accountName) 
                     notDone = False 
-                    print("success :  $" + str(sum) + " from savings to " + accountName)
+                    print("success: ${:.2f}".format(sum) + " from savings to " + accountName)
             else:
                 print("error: " +  accountName +   " is not a valid category")
     # CASE THREE : tranfer from catagory to another catagory. 
@@ -257,11 +265,11 @@ def transfer():
                         if(retVal == 0):
                             myChecking.deposit(sum,toHere)
                             notDone = False
-                            print("success: " + str(sum) + " from " + fromHere + " to " + toHere)
+                            print("success: ${:.2f}".format(sum) + " from " + fromHere + " to " + toHere)
                         elif(retVal == -3):
                             print("error: attempted category overdraft") 
                     else:
-                        print("error "  + toHere +   " is not a valid category")
+                        print("error: "  + toHere +   " is not a valid category")
                 else:
                     print("error: "  + fromHere +   "  is not a valid category") 
         elif(userChoice == "Q"):
@@ -313,9 +321,9 @@ while(userChoice != "q"):
                 except:
                     print("error: enter numerical values only")
             Savings.deposit(sum)
-            print("s u c c e s s  :  $" + str(sum) + " deposited to savings")
+            print("success: ${:.2f} was deposited to savings".format(sum))
         elif(accountName == "checking"):
-            showDashboard()
+            displayCats()
             accountName = input("to category-->>").strip().lower()
             fail = True
             while(fail):
@@ -330,7 +338,7 @@ while(userChoice != "q"):
             elif(retVal == -2):
                 print("error: " + accountName + " is not a valid category")  
             elif(retVal == 0):
-                print("success: $" + str(sum) + " deposited to " + accountName)
+                print("success: ${:.2f}".format(sum) + " deposited to " + accountName)
         else:
             print("error: choose either checking or savings to deposit")     
 # user makes withdraw 
@@ -364,7 +372,7 @@ while(userChoice != "q"):
         elif(retVal == 0):
             if(isCredit):
                 myChecking.updateBoa(sum) 
-            print("success:  $" + str(sum) + " withdrawn from " + accountName)
+            print("success: ${:.2f}".format(sum) + " withdrawn on credit from " + accountName)
             
 # user makes transfer..... 
     elif(userChoice=="trans"):
@@ -409,7 +417,7 @@ while(userChoice != "q"):
             print("error: could not save")
             userChoice = ""
     elif(userChoice == "p"):
-        print("BOA current balance-->>" + str(myChecking.getBoa()))
+        print("BOA current balance: ${:.2f}".format(myChecking.getBoa()))
         fail = True
         while(fail):
             try:
