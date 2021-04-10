@@ -1,7 +1,11 @@
 import pickle
 import os  
+import numpy as np 
 ###############################################################################################
 ###############################################################################################
+
+# need to talk about what to do about things. 
+# dsf 
 class Account:
     def __init__(self, name):
         self.name = name 
@@ -56,7 +60,7 @@ class Checking(Account):
             return -1
         else:
             for i in self.catagories:
-                print(str(i.getName()) + " : " + str(i.getBalance()))
+                print(str(i.getName()) + " : " + np.round(i.getBalance(),2))
  ###############################################################################################
     def payBoa(self, sum):
         self.boa = self.boa - sum
@@ -84,7 +88,7 @@ class Checking(Account):
     def deleteCatagory(self, nameTag):
         pass
 ###############################################################################################
-# getCatagory returns the catagory object if found./
+# getCatagory returns the catagory object if found.
 # RETURN 
 # account object) if found 
 # -1) if catagory list was empty 
@@ -153,7 +157,7 @@ class Checking(Account):
 
 
 ###########################################################################################
-# MAIN PROGRAM #  
+# FUNCTIONS FOR USE IN MAIN PROGRAM # 
 ###########################################################################################
 
 
@@ -170,12 +174,12 @@ def menu():
  ###############################################################################################
 def showDashboard():
     print("Accounts and Categories:")
-    print("checking: " + str(myChecking.getBalance()))
+    print("checking: " + str(np.round(myChecking.getBalance(),2)))
     for i in myChecking.catagories:
         accountName = i.getName()
-        print("* " + accountName + ": " + str(i.getBalance()))
-    print("Bank of America: " + str(myChecking.getBoa()))
-    print("Savings: " + str(Savings.getBalance())) 
+        print("* " + accountName + ": " + str(np.round(i.getBalance(),2)))
+    print("Bank of America: " + str(np.round(myChecking.getBoa(),2)))
+    print("Savings: " + str(np.round(Savings.getBalance())))
  ###############################################################################################
 def transfer():
     notDone = True
@@ -264,21 +268,23 @@ def transfer():
             
 ######################################################################################################################
 ######################################################################################################################
-            #program entry 
+            #program entry (start using those functions)
 ######################################################################################################################
 ######################################################################################################################
 
 # look before we leap and check to see if the file exists someplace
 # if this  pickle load does not run, we will be attmepting to access null objects. 
 
-#myChecking = Checking("Checking")
-#Savings = Account("Savings") 
-
 if(os.path.isfile('account_data.pkl')):
     with open('account_data.pkl', 'rb') as readMe:
         myChecking = pickle.load(readMe)
         Savings = pickle.load(readMe)  
     readMe.close() 
+# Added logic so that if program is run on machine with no pickle data it will create the base categories checking and savings.  
+else:
+    myChecking = Checking("Checking")
+    Savings = Account("Savings") 
+
 
 # print out initial displays      
 header() 
