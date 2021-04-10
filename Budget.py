@@ -1,6 +1,7 @@
 import pickle
 import os  
 import numpy as np 
+from decimal import Decimal as D 
 ###############################################################################################
 ###############################################################################################
 
@@ -12,13 +13,14 @@ class Account:
         self.balance = 0.0 
         self.negative = 0.0
 
-    def deposit(self, sum: float):
-        self.balance = self.balance + sum 
+    def deposit(self, sum):
+        self.balance = D(self.balance) + D(sum) 
 
-    def withdraw(self, sum: float):
-        self.negative = self.balance - sum 
+#double check the logic here. Not sure if this is right.  
+    def withdraw(self, sum):
+        self.negative = D(self.balance) - D(sum) 
         if(sum <= self.balance):
-            self.balance = self.balance - sum 
+            self.balance = D(self.balance) - D(sum) 
             return 0 
         elif(sum > self.balance):
             return -1
@@ -50,7 +52,7 @@ class Checking(Account):
         self.tag = ""
 ################################################################################################
     def updateBoa(self, sum):
-        self.boa = self.boa + sum 
+        self.boa = D(self.boa) + D(sum) 
 ################################################################################################
     def getBoa(self):
         return self.boa
@@ -60,10 +62,11 @@ class Checking(Account):
             return -1
         else:
             for i in self.catagories:
-                print(str(i.getName()) + " : " + np.round(i.getBalance(),2))
+                # Pretty sure this is NOT how we are goign to format this. 
+                print(str(i.getName()) + " : " + str(i.getBalance()))
  ###############################################################################################
     def payBoa(self, sum):
-        self.boa = self.boa - sum
+        self.boa = D(self.boa) - D(sum)
  ###############################################################################################
 # adds an account to the list in the checking account.
 # RETURN: -1 if that's already a catagory. 0 if added.  
@@ -114,7 +117,7 @@ class Checking(Account):
             for i in self.catagories:
                 if (i.getName() == catagoryName):
                     i.deposit(sum)
-                    self.balance = self.balance + sum 
+                    self.balance = D(self.balance) + D(sum) 
                     return 0 
             return -2 
  ###############################################################################################
@@ -133,7 +136,7 @@ class Checking(Account):
                 return -3
             else:
                 catagory.withdraw(sum)
-                self.balance = self.balance - sum
+                self.balance = D(self.balance) - D(sum)
                 return 0
         else:
             return -4
@@ -174,12 +177,12 @@ def menu():
  ###############################################################################################
 def showDashboard():
     print("Accounts and Categories:")
-    print("checking: " + str(np.round(myChecking.getBalance(),2)))
+    print("checking: " + str(myChecking.getBalance()))
     for i in myChecking.catagories:
         accountName = i.getName()
-        print("* " + accountName + ": " + str(np.round(i.getBalance(),2)))
-    print("Bank of America: " + str(np.round(myChecking.getBoa(),2)))
-    print("Savings: " + str(np.round(Savings.getBalance())))
+        print("* " + accountName + ": " + str(i.getBalance()))
+    print("Bank of America: " + str(myChecking.getBoa()))
+    print("Savings: " + str(Savings.getBalance()))
  ###############################################################################################
 def transfer():
     notDone = True
