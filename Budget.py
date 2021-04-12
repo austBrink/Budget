@@ -275,7 +275,6 @@ def transfer():
         elif(userChoice == "Q"):
             print("returning you to main")
             notDone = False
-
             
 ######################################################################################################################
 ######################################################################################################################
@@ -398,8 +397,6 @@ while(userChoice != "q"):
             print("error: " + accountName + " is not a valid category") 
         elif(retVal == -3):
             print("error: category balance must be zero to remove")
-        elif(retVal == 0):
-            print("success: removed " + accountName)  
 # options print 
     elif(userChoice == "opt"):
         menu()       
