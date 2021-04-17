@@ -1,1 +1,2 @@
 Consider Documentation on key features. This will help with building test cases. 
+WHY DO WE HAVE isCatagory AND getCatagory. ..... whats the diff 

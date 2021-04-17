@@ -4,7 +4,6 @@ import numpy as np
 from decimal import Decimal as D 
 ###############################################################################################
 ###############################################################################################
-
 class Account:
     def __init__(self, name):
         self.name = name 
@@ -33,13 +32,11 @@ class Account:
 
     def setName(self, newName):
         self.name = newName
-
  ###############################################################################################
  ###############################################################################################
  # Checking class 
  ###############################################################################################
  ###############################################################################################
-
 class Checking(Account):
     def __init__(self, name):
         self.name = name 
@@ -79,10 +76,11 @@ class Checking(Account):
 # this function checks to see if a catagory is valid. 
 # RETURNS... -1) no catagories -2) not found 0) found / valid  
     def isCatagory(self, catagoryName):
+        retVal = Account("null")
         for i in self.catagories:
             if (i.getName() == catagoryName):
                 return i 
-        return False
+        return retVal
 ###############################################################################################
 # option for removing a catagory....coming soon
     def deleteCatagory(self, nameTag):
@@ -154,12 +152,9 @@ class Checking(Account):
                 return 0
 ###########################################################################################     
 
-
-
 ###########################################################################################
 # FUNCTIONS FOR USE IN MAIN PROGRAM # 
 ###########################################################################################
-
 
 ###############################################################################################
 def header():
@@ -202,14 +197,37 @@ def transfer():
         print("_______________________________________________________________________")
         userChoice = input("-->>").strip().upper()
     # CASE ONE : tranfer from checking to savings 
-        if(userChoice == "A"):
+        if(userChoice == "A"):  
             accountName = input("withdraw from-->>").strip().lower()
-            fail = True
+            print("Would you like to transfer total balance to savings (y/n)?")
+            option = input("-->").strip().lower()
+            flag = True
+            fail = False
+            while(flag == True):
+                if(option == "y"):
+                    # what if this is null??? catch that. 
+                    deleteMe = myChecking.isCatagory(accountName)
+                    if(deleteMe.getName() == "null"):
+                        #print("Category DNE")
+                        flag = False
+                    else:
+                        transAmount = deleteMe.getBalance()
+                        #Savings.deposit(transAmount)
+                    # dont need to check for overdrafting. We are pulling the sum exactly. 
+                        #deleteMe.withdraw(transAmount)
+                        #myChecking.withdraw(transAmount, accountName)
+                        # Changing "fail" to false so next while loop doesnt run. We don't want to get user input for transfer amount if we choose to drain account.
+                        # Setting flag to false breaks the current (y/n) loop 
+                        sum = transAmount
+                        flag = False 
+                if(option == "n"):
+                    flag = False
+                    fail = True
             while(fail):
                 try:
                     sum = float(input("amount-->>"))
                     fail = False
-                except:
+                except: 
                     print("error: enter numerical values only")
             retVal = myChecking.withdraw(sum, accountName) 
             if(retVal == -1):
@@ -247,7 +265,7 @@ def transfer():
                     print("success: ${:.2f}".format(sum) + " from savings to " + accountName)
             else:
                 print("error: " +  accountName +   " is not a valid category")
-    # CASE THREE : tranfer from catagory to another catagory. 
+    # CASE THREE : tranfer from category to another catagory. 
         elif(userChoice == "C"):
             fromHere = input("from category-->>").strip().lower()
             toHere = input("to category-->>").strip().lower() 
@@ -274,8 +292,8 @@ def transfer():
                     print("error: "  + fromHere +   "  is not a valid category") 
         elif(userChoice == "Q"):
             print("returning you to main")
-            notDone = False
-            
+            notDone = False        
+
 ######################################################################################################################
 ######################################################################################################################
             #program entry (start using those functions)
@@ -294,7 +312,6 @@ if(os.path.isfile('account_data.pkl')):
 else:
     myChecking = Checking("Checking")
     Savings = Account("Savings") 
-
 
 # print out initial displays      
 header() 
@@ -371,8 +388,7 @@ while(userChoice != "q"):
         elif(retVal == 0):
             if(isCredit):
                 myChecking.updateBoa(sum) 
-            print("success: ${:.2f}".format(sum) + " withdrawn on credit from " + accountName)
-            
+                print("success: ${:.2f}".format(sum) + " withdrawn on credit from " + accountName)         
 # user makes transfer..... 
     elif(userChoice=="trans"):
         transfer()
@@ -380,12 +396,11 @@ while(userChoice != "q"):
     elif(userChoice == "mkcat"):
         accountName = input("name-->>").strip()
         retVal = myChecking.createCatagory(accountName)
-        # myChecking.createCatagory(accountName)
+        #myChecking.createCatagory(accountName)
         if(retVal == -1):
             print("error: " + accountName + " already exists, man")
         elif(retVal == 0):
             print("success: created "  + accountName + " as category")
-
 # user attempts to remove catagory 
 # -1) if no catagories -2) if catagory is not in list -3) if it's not balance 0. and 0 exited normally and executed user objective. 
     elif(userChoice == "rmcat"):
@@ -396,10 +411,21 @@ while(userChoice != "q"):
         elif(retVal == -2):
             print("error: " + accountName + " is not a valid category") 
         elif(retVal == -3):
-            print("error: category balance must be zero to remove")
+            print("error: category balance must be zero to remove. Safely transfer down to $0.00 and return.")
+        elif(retVal == 0):
+            print("Success. Removed " + accountName + " from categories.") 
 # options print 
     elif(userChoice == "opt"):
-        menu()       
+        menu()      
+# to  display non rounded dollar amount as decimal.  
+    elif(userChoice == "real"):
+        print("which catagory to display?")
+        catName = input("-->").strip().lower()
+        retVal = myChecking.isCatagory(catName)
+        if(retVal.getName()=="null"):
+            print("not a thing")
+        else:
+           print("Precise balance of " + catName + " {:f}".format(retVal.getBalance()))
 # quit 
     elif(userChoice == "q"):
         # need stuff like "save changes?"
