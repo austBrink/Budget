@@ -1,12 +1,27 @@
-from decimal import Decimal as d
+
+def getSum(x , y):
+    xAsInt = int(x * 100)
+    yAsInt = int(y * 100)
+    return (xAsInt + yAsInt)/100
+
+def getDiff(a , b):
+    xAsInt = int(x * 100)
+    yAsInt = int(y * 100)
+    return (xAsInt - yAsInt)/100
 
 
-#Illustrates how a valid
-myRealNumber = d(1.10)+d(2.20)
-myNumber = 1.1 + 2.2
+x = float(input('x:'))
+y = float(input('y:'))
 
-print(myRealNumber)
-print(myNumber)
-print("formatted")
-print("{:.2f}".format(myRealNumber))
-print("{:.2f}".format(myNumber))
+print(x+y)
+print(getSum(x,y))
+
+
+
+
+
+
+
+
+    
+    

@@ -1,9 +1,22 @@
 import pickle
 import os  
 import numpy as np 
-from decimal import Decimal as D 
+
+###############################################################################################
+# utilities 
+###############################################################################################
+def getSum(x , y):
+    xAsInt = int(x * 100)
+    yAsInt = int(y * 100)
+    return (xAsInt + yAsInt)/100
+
+def getDiff(x , y):
+    xAsInt = int(x * 100)
+    yAsInt = int(y * 100)
+    return (xAsInt - yAsInt)/100
 ###############################################################################################
 ###############################################################################################
+
 class Account:
     def __init__(self, name):
         self.name = name 
@@ -11,12 +24,15 @@ class Account:
         self.negative = 0.0
 
     def deposit(self, sum):
-        self.balance = D(self.balance) + D(sum) 
- 
+        #self.balance = D(self.balance) + D(sum) 
+        self.balance = getSum(self.balance,sum)
+
     def withdraw(self, sum):
-        self.negative = D(self.balance) - D(sum) 
+        self.negative = getDiff(self.balance,sum)
+        #self.negative = D(self.balance) - D(sum) 
         if(sum <= self.balance):
-            self.balance = D(self.balance) - D(sum) 
+            #self.balance = D(self.balance) - D(sum) 
+            self.balance = getDiff(self.balance,sum)
             return 0 
         elif(sum > self.balance):
             return -1
@@ -46,7 +62,8 @@ class Checking(Account):
         self.tag = ""
 ################################################################################################
     def updateBoa(self, sum):
-        self.boa = D(self.boa) + D(sum) 
+        self.boa = getSum(self.boa,sum)
+        #self.boa = D(self.boa) + D(sum) 
 ################################################################################################
     def getBoa(self):
         return self.boa
@@ -60,7 +77,8 @@ class Checking(Account):
                 print(str(i.getName()) + " : ${:.2f}".format(i.getBalance()))
  ###############################################################################################
     def payBoa(self, sum):
-        self.boa = D(self.boa) - D(sum)
+        #self.boa = D(self.boa) - D(sum)
+        self.balance = getDiff(self.balance,sum)
  ###############################################################################################
 # adds an account to the list in the checking account.
 # RETURN: -1 if that's already a catagory. 0 if added.  
@@ -76,11 +94,11 @@ class Checking(Account):
 # this function checks to see if a catagory is valid. 
 # RETURNS... -1) no catagories -2) not found 0) found / valid  
     def isCatagory(self, catagoryName):
-        retVal = Account("null")
+        #retVal = Account("null")
         for i in self.catagories:
             if (i.getName() == catagoryName):
                 return i 
-        return retVal
+        #return retVal
 ###############################################################################################
 # option for removing a catagory....coming soon
     def deleteCatagory(self, nameTag):
@@ -112,26 +130,31 @@ class Checking(Account):
             for i in self.catagories:
                 if (i.getName() == catagoryName):
                     i.deposit(sum)
-                    self.balance = D(self.balance) + D(sum) 
+                    #self.balance = D(self.balance) + D(sum) 
+                    self.balance = getSum(self.balance,sum)
                     return 0 
             return -2 
+############################################################################################### 
+
  ###############################################################################################
     # removes float variable sum from the balance of catagory in self.catagories. 
     # RETURNS 0 for success -1) for empty catagory list -2) for TOTAL CHECKING overdraft -3) for catagory overdraft -4) no such catagory exists in catagorylist   
-    # me from the future.... this is a really crap function. 
-    def withdraw(self,sum,catagoryName):
+    # me from the future.... this is a really crap function.
+    def withdraw(self, sum, catagoryName):
         if (not self.catagories):
             return -1
         # now see if the user's catagory is in the list 
         catagory = self.getCatagory(catagoryName)
+        
         if(catagory != -2):
-            if(self.balance < sum):
+            if((self.balance < sum)):
                 return -2
-            elif(catagory.getBalance() < sum):
+            elif((catagory.getBalance() < sum)):
                 return -3
             else:
                 catagory.withdraw(sum)
-                self.balance = D(self.balance) - D(sum)
+                #self.balance = D(self.balance) - D(sum)
+                self.balance = getDiff(self.balance,sum)
                 return 0
         else:
             return -4
@@ -165,7 +188,7 @@ def header():
     print("_______________________________________")
  ###############################################################################################
 def menu():
-    print("E N T E R   A  V A L I D   C H O I C E: \n\n show) s h o w \n\n in) d e p o s i t \n\n out) w i t h d r a w \n\n trans) t r a n s f e r \n\n mkcat) c r e a t e  c a t a g o r y \n\n rmcat) r e m o v e   c a t a g o r y \n\n opt) o p t i o n s \n\n q) q u i t \n\n p) p a y   b o a  \n")
+    print("ENTER A VALID CHOICE: \n\n show) show \n\n in) deposit \n\n out) withdraw \n\n trans) transfer \n\n mkcat) create catagory \n\n rmcat) remove catagory \n\n opt) options \n\n q) quit \n\n p) pay boa \n")
  ###############################################################################################
 def displayCats():
     for i in myChecking.catagories:
@@ -188,12 +211,12 @@ def showDashboard():
     print("Savings: ${:.2f}".format(Savings.getBalance()))
  ###############################################################################################
 def transfer():
-    notDone = True
+    notDone = True 
     sum = 0.0 
     while(notDone):
-        print("\n  T R A N S F E R   M E N U  ")  
+        print("\n  TRANSFER MENU")  
         print("_______________________________________________________________________")
-        print("\n E N T E R   A   V A L I D   C H O I C E: \n\n A) c h e c k i n g   t o   s a v i n g s \n\n B) s a v i n g s   t o   c h e c k i n g \n\n C) c a t a g o r y   t o   c a t a g o r y \n\n Q) q u i t")
+        print("\n ENTER A VALID  CHOICE: \n\n A) checking to savings \n\n B) savings to checking \n\n C) catagory to catagory \n\n Q) quit")
         print("_______________________________________________________________________")
         userChoice = input("-->>").strip().upper()
     # CASE ONE : tranfer from checking to savings 
@@ -207,7 +230,7 @@ def transfer():
                 if(option == "y"):
                     # what if this is null??? catch that. 
                     deleteMe = myChecking.isCatagory(accountName)
-                    if(deleteMe.getName() == "null"):
+                    if(deleteMe == None):
                         #print("Category DNE")
                         flag = False
                     else:
@@ -254,7 +277,7 @@ def transfer():
                 except:
                     print("error: enter numerical values only")
             # THIS LINE IS NOT ALLOWED TO EXECUTE NORMALLY IF NO DESTINATION CATAGORY. Check destinations first! 
-            if(myChecking.isCatagory(accountName)!= False):
+            if(myChecking.isCatagory(accountName)!= None):
                 retVal = Savings.withdraw(sum)
                 if (retVal == -1):
                     print("error: attempted savings overdraft")
@@ -299,7 +322,6 @@ def transfer():
             #program entry (start using those functions)
 ######################################################################################################################
 ######################################################################################################################
-
 # look before we leap and check to see if the file exists someplace
 # if this  pickle load does not run, we will be attmepting to access null objects. 
 
@@ -422,10 +444,13 @@ while(userChoice != "q"):
         print("which catagory to display?")
         catName = input("-->").strip().lower()
         retVal = myChecking.isCatagory(catName)
-        if(retVal.getName()=="null"):
+        if(retVal == None):
             print("not a thing")
         else:
-           print("Precise balance of " + catName + " {:f}".format(retVal.getBalance()))
+           print("Precise balance of " + catName) 
+           print(retVal.getBalance())
+           print("Bal of Checking is.. ")
+           print(myChecking.getBalance()) 
 # quit 
     elif(userChoice == "q"):
         # need stuff like "save changes?"
