@@ -6,13 +6,13 @@ import numpy as np
 # utilities 
 ###############################################################################################
 def getSum(x , y):
-    xAsInt = int(x * 100)
-    yAsInt = int(y * 100)
+    xAsInt = (x * 100)
+    yAsInt = (y * 100)
     return (xAsInt + yAsInt)/100
 
 def getDiff(x , y):
-    xAsInt = int(x * 100)
-    yAsInt = int(y * 100)
+    xAsInt = (x * 100)
+    yAsInt = (y * 100)
     return (xAsInt - yAsInt)/100
 ###############################################################################################
 ###############################################################################################
@@ -78,7 +78,7 @@ class Checking(Account):
  ###############################################################################################
     def payBoa(self, sum):
         #self.boa = D(self.boa) - D(sum)
-        self.balance = getDiff(self.balance,sum)
+        self.boa = getDiff(self.boa,sum)
  ###############################################################################################
 # adds an account to the list in the checking account.
 # RETURN: -1 if that's already a catagory. 0 if added.  
@@ -131,6 +131,7 @@ class Checking(Account):
                 if (i.getName() == catagoryName):
                     i.deposit(sum)
                     #self.balance = D(self.balance) + D(sum) 
+                    #set the checking balance. whats the point of this? Why is the checking sum not just the sum of the categories???? 
                     self.balance = getSum(self.balance,sum)
                     return 0 
             return -2 
