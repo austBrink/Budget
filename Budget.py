@@ -193,7 +193,7 @@ def header():
     print("_______________________________________")
  ###############################################################################################
 def menu():
-    print("ENTER A VALID CHOICE: \n\n show) show \n\n in) deposit \n\n out) withdraw \n\n trans) transfer \n\n mkcat) create catagory \n\n rmcat) remove catagory \n\n opt) options \n\n q) quit \n\n p) pay boa \n")
+    print("ENTER A VALID CHOICE: \n\n show) show \n\n in) deposit \n\n out) withdraw \n\n trans) transfer \n\n mkcat) create catagory \n\n rmcat) remove catagory \n\n p) pay boa \n\n e) email stats \n\n opt) options \n\n q) quit \n")
  ###############################################################################################
 def displayCats():
     for i in myChecking.catagories:
