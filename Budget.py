@@ -1,10 +1,14 @@
 import pickle
 import os  
 import numpy as np 
+import smtplib  
+from dotenv import load_dotenv 
+from email.message import EmailMessage
 
 ###############################################################################################
 # utilities 
 ###############################################################################################
+
 def getSum(x , y):
     xAsInt = (x * 100)
     yAsInt = (y * 100)
@@ -316,11 +320,25 @@ def transfer():
                     print("error: "  + fromHere +   "  is not a valid category") 
         elif(userChoice == "Q"):
             print("returning you to main")
-            notDone = False        
+            notDone = False  
+############################################################################################################
+load_dotenv("data.env")
+SENDER = os.environ.get("USER_NAME")
+PASSWORD = os.environ.get("PASS")
+def sendEmail(recipient, subject, body):
+    msg=EmailMessage()
+    msg.set_content(body)
+    msg["From"] = SENDER 
+    msg["To"] = recipient
+    msg["Subject"] = subject 
+    server = smtplib.SMTP_SSL("smtp.gmail.com",465)
+    server.login(SENDER, PASSWORD)
+    server.send_message(msg)
+    server.quit()      
 
 ######################################################################################################################
 ######################################################################################################################
-            #program entry (start using those functions)
+            #program entry (start using functions)
 ######################################################################################################################
 ######################################################################################################################
 # look before we leap and check to see if the file exists someplace
@@ -475,5 +493,21 @@ while(userChoice != "q"):
             except:
                 print("error: enter numerical values only")
         myChecking.payBoa(sum)
+    elif(userChoice == 'e'):
+        #set email message and keep ading to it in order to pass to sendEmail function 
+        msg = ""
+        msg = msg + "Accounts and Categories:\n"
+        # Show Checking total 
+        msg = msg + "checking: ${:.2f}".format(myChecking.getBalance()) + "\n"
+        #loop for catagories 
+        for i in myChecking.catagories:
+            accountName = i.getName()
+            msg = msg + accountName + ": ${:.2f}".format(i.getBalance()) + "\n"
+        #show bank of america bal (already deducted from categories)
+        msg = msg + "Bank of America: ${:.2f}".format(myChecking.getBoa()) + "\n" 
+        msg = msg + "Savings: ${:.2f}".format(Savings.getBalance()) + "\n"
+        sendEmail("austbrink@gmail.com",subject="testing",body=msg)
+        sendEmail("sheasnu@gmail.com",subject="testing",body=msg)
+        print("Success: email report sent")
     else: 
         print(userChoice + "  is not a recognized command")
