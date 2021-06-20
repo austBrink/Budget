@@ -465,6 +465,7 @@ while(userChoice != "q"):
         except:
             print("error: could not save")
             userChoice = ""
+ #paying boa            
     elif(userChoice == "p"):
         print("BOA current balance: ${:.2f}".format(myChecking.getBoa()))
         fail = True
